@@ -5,7 +5,7 @@ services:
   quic-server:
     image: welikecode/dnsproxy
     container_name: "quic-server"
-    command: "/app/dnsproxy -l 0.0.0.0 --quic-port=784 -u 8.8.8.8:53 -u 1.1.1.1:53"
+    command: "/app/dnsproxy -l 0.0.0.0  --tls-crt=/app/example.crt --tls-key=/app/example.key  --quic-port=784 -u 8.8.8.8:53 -u 1.1.1.1:53 -p 0"
     expose:
      - 784
      - 53
@@ -13,9 +13,10 @@ services:
   quic-client:
     image: welikecode/dnsproxy
     container_name: "quic-client"
-    command: "/app/dnsproxy -l 0.0.0.0 -p 53 -u quic://quic-server:784"
+    command: "/app/dnsproxy -l 0.0.0.0 -p 53 -u quic://quic-server -v"
     ports:
       - '53:53/udp'
+    
 
     
     

@@ -12,6 +12,7 @@ ENV COUNTRY ME
 #RUN openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout server.key -out server.crt
 #WORKDIR /
 ENV CERT_DIR /etc/ssl/certs/
+ENV ISSUER_NAME quic-server
 #RUN sh -c 'echo $CERT_DIR'
 RUN /docker-entrypoint.sh && find / -name *.crt && cp -r /etc/ssl/certs/ /certs
 #RUN ls -al /etc/ssl/certs/ && find / -name *.crt
@@ -23,8 +24,8 @@ FROM alpine:3.11
 RUN mkdir /app
 WORKDIR /app
 COPY --from=builder /build/dnsproxy /app/dnsproxy
-COPY --from=certgen /certs/example.crt /app/example.crt
-COPY --from=certgen /certs/example.key /app/example.key
+COPY --from=certgen /certs/quic-server.crt /app/example.crt
+COPY --from=certgen /certs/quic-server.key /app/example.key
 
 RUN chmod +x /app/dnsproxy
 #RUN ls -al /app/
