@@ -12,9 +12,12 @@ ENV COUNTRY ME
 #RUN openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout server.key -out server.crt
 #WORKDIR /
 ENV CERT_DIR /etc/ssl/certs/
-ENV ISSUER_NAME quic-server
+ENV ROOT_NAME quic-server
+ENV ROOT_CN *.quic-server
+ENV DAYS 3650
+ENV RSA_KEY_NUMBITS 4096
 #RUN sh -c 'echo $CERT_DIR'
-RUN /docker-entrypoint.sh && find / -name *.crt && cp -r /etc/ssl/certs/ /certs
+RUN /docker-entrypoint.sh && find / -name *.crt && cp -r /etc/ssl/certs/ /certs ;
 #RUN ls -al /etc/ssl/certs/ && find / -name *.crt
 #RUN cat /docker-entrypoint.sh
 
@@ -26,6 +29,12 @@ WORKDIR /app
 COPY --from=builder /build/dnsproxy /app/dnsproxy
 COPY --from=certgen /certs/quic-server.crt /app/example.crt
 COPY --from=certgen /certs/quic-server.key /app/example.key
+
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+RUN cp /app/example.crt /usr/local/share/ca-certificates/mycert.crt
+
+RUN update-ca-certificates
+
 
 RUN chmod +x /app/dnsproxy
 #RUN ls -al /app/
