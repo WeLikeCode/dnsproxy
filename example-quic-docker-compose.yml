@@ -3,9 +3,9 @@ version: '3.4'
 
 services: 
   quic-server:
-    image: welikecode/dnsproxy
+    image: welikecode/dnsproxy:v0.33.7c
     container_name: "a.quic-server"
-    command: "/app/dnsproxy -l 0.0.0.0  --tls-crt=/app/example.crt --tls-key=/app/example.key  --quic-port=784 -u 8.8.8.8:53 -u 1.1.1.1:53 -p 0 -v"
+    command: "/app/dnsproxy --refuse-any -l 0.0.0.0  --tls-crt=/app/example.crt --tls-key=/app/example.key  --quic-port=784 -u 8.8.8.8:53 -u 1.1.1.1:53 -p 0 -v"
     expose:
      - 784
      - 53
@@ -14,7 +14,7 @@ services:
         ipv4_address: 10.40.0.11
   
   quic-client:
-    image: welikecode/dnsproxy
+    image: welikecode/dnsproxy:v0.33.7c
     container_name: "quic-client"
     extra_hosts:
     - "b.quic-server:10.40.0.11"
