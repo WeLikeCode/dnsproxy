@@ -7,10 +7,24 @@ WORKDIR /build
 RUN go build -mod=vendor
 #RUN ls -al 
 
+FROM pgarrett/openssl-alpine as certgen
+ENV COUNTRY ME
+#RUN openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout server.key -out server.crt
+#WORKDIR /
+ENV CERT_DIR /etc/ssl/certs/
+#RUN sh -c 'echo $CERT_DIR'
+RUN /docker-entrypoint.sh && find / -name *.crt && cp -r /etc/ssl/certs/ /certs
+#RUN ls -al /etc/ssl/certs/ && find / -name *.crt
+#RUN cat /docker-entrypoint.sh
+
+
 # generate clean, final image for end users
 FROM alpine:3.11
 RUN mkdir /app
+WORKDIR /app
 COPY --from=builder /build/dnsproxy /app/dnsproxy
+COPY --from=certgen /certs/example.crt /app/example.crt
+COPY --from=certgen /certs/example.key /app/example.key
 
 RUN chmod +x /app/dnsproxy
 #RUN ls -al /app/

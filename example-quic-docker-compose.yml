@@ -1,0 +1,21 @@
+version: '3.4'
+
+
+services: 
+  quic-server:
+    image: welikecode/dnsproxy
+    container_name: "quic-server"
+    command: "/app/dnsproxy -l 0.0.0.0 --quic-port=784 -u 8.8.8.8:53 -u 1.1.1.1:53"
+    expose:
+     - 784
+     - 53
+  
+  quic-client:
+    image: welikecode/dnsproxy
+    container_name: "quic-client"
+    command: "/app/dnsproxy -l 0.0.0.0 -p 53 -u quic://quic-server:784"
+    ports:
+      - '53:53/udp'
+
+    
+    
