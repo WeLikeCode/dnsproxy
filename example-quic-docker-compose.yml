@@ -9,14 +9,27 @@ services:
     expose:
      - 784
      - 53
+    networks:
+      quic_net:
+        ipv4_address: 10.40.0.11
   
   quic-client:
     image: welikecode/dnsproxy
     container_name: "quic-client"
-    command: "/app/dnsproxy -l 0.0.0.0 -p 53 -u quic://a.quic-server -v"
+    extra_hosts:
+    - "b.quic-server:10.40.0.11"
+    command: "/app/dnsproxy -l 0.0.0.0 -p 53 -u quic://b.quic-server -u quic://a.quic-server  -v"
     ports:
       - '53:53/udp'
+    networks:
+      quic_net:
+        ipv4_address: 10.40.0.2
     
+networks:
+  quic_net:
+    ipam:
+      config:
+        - subnet: 10.40.0.0/24
 
     
     
