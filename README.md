@@ -3,6 +3,38 @@
 [![GolangCI](https://golangci.com/badges/github.com/AdguardTeam/dnsproxy.svg)](https://golangci.com/r/github.com/AdguardTeam/dnsproxy)
 [![Go Doc](https://godoc.org/github.com/AdguardTeam/dnsproxy?status.svg)](https://godoc.org/github.com/AdguardTeam/dnsproxy)
 
+# Why this fork 
+Looked at different implementations of DNS-over-QUIC and this one seems to be the best .. so far. 
+There was one problem: no docker image to be found; hence this fork with docker image. 
+
+# Usecase scenario with Pihole - privacy and some extra security
+
+```mermaid
+graph LR
+  LocalPiHole --> LocalQuicClient
+  LocalQuicClient --> ExternalQuicServer
+  ExternalQuicServer --> LocalQuicClient
+  LocalQuicClient --> LocalPiHole
+```
+
+I'm using Pihole as my home network dns server, a quic-client as a dns resolver that asks a remote quic-server for records. 
+
+**Suck some encryption ISP!** 
+
+You can use 'example-quic-docker-compose.yml' as a starting point. 
+
+
+# Build you own 
+
+IMPORTANT: Each new build of dnsproxy generates a new selfsigned cert needed for quic. By deafult, different versions of it won't communicate. 
+
+```
+docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64  --tag YOURTAG/dnsproxy:latest . -f dockerfiles/Dockerfile 
+```
+**Many thanks to the AdGuard team that did a good job.**  I'll try their product, but I'm a little conservative(better the PiHole you know ...). 
+
+
+
 # DNS Proxy <!-- omit in toc -->
 
 A simple DNS proxy server that supports all existing DNS protocols including `DNS-over-TLS`, `DNS-over-HTTPS`, `DNSCrypt`, and `DNS-over-QUIC`. Moreover, it can work as a `DNS-over-HTTPS`, `DNS-over-TLS` or `DNS-over-QUIC` server.
